@@ -1,4 +1,4 @@
-# [Mirai Selenium Plugin](https://github.com/cssxsh/mirai-skija-plugin)
+# [Mirai Skija Plugin](https://github.com/cssxsh/mirai-skija-plugin)
 
 > Mirai Skija 前置插件
 
