@@ -6,9 +6,9 @@ import org.jetbrains.skija.*
 import java.io.*
 
 public class SkijaExternalResource(override val origin: Data, override val formatName: String) : ExternalResource {
-    public constructor(surface: Surface, format: EncodedImageFormat) : this(
-        origin = requireNotNull(surface.makeImageSnapshot().encodeToData(format)) { "encode $format null." },
-        formatName = format.name
+    public constructor(image: Image, format: EncodedImageFormat) : this(
+        origin = requireNotNull(image.encodeToData(format)) { "encode $format result null." },
+        formatName = format.name.replace("JPEG", "JPG")
     )
 
     override val closed: CompletableDeferred<Unit> = CompletableDeferred()
@@ -17,11 +17,7 @@ public class SkijaExternalResource(override val origin: Data, override val forma
     override val size: Long get() = origin.size
 
     override fun close() {
-        try {
-            closed.complete(Unit)
-        } catch (_: Throwable) {
-            //
-        }
+        closed.completeWith(origin.runCatching { close() })
     }
 
     override fun inputStream(): InputStream = origin.bytes.inputStream()

@@ -9,6 +9,6 @@ import org.jetbrains.skija.*
  * @see Image.encodeToData
  * @see ExternalResource
  */
-public fun Surface.makeImageResource(format: EncodedImageFormat = EncodedImageFormat.PNG): SkijaExternalResource {
-    return SkijaExternalResource(surface = this, format = format)
+public fun Surface.makeSnapshotResource(format: EncodedImageFormat = EncodedImageFormat.PNG): SkijaExternalResource {
+    return SkijaExternalResource(image = makeImageSnapshot(), format = format)
 }
