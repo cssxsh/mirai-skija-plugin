@@ -9,6 +9,7 @@ import net.mamoe.mirai.utils.*
  * @see Image.encodeToData
  * @see ExternalResource
  */
+@JvmOverloads
 public fun Surface.makeSnapshotResource(format: EncodedImageFormat = EncodedImageFormat.PNG): SkijaExternalResource {
     return SkijaExternalResource(image = makeImageSnapshot(), format = format)
 }
