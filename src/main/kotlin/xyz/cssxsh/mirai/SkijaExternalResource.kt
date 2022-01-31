@@ -1,8 +1,8 @@
 package xyz.cssxsh.mirai
 
+import io.github.humbleui.skija.*
 import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.*
-import org.jetbrains.skija.*
 import java.io.*
 
 public class SkijaExternalResource(override val origin: Data, override val formatName: String) : ExternalResource {

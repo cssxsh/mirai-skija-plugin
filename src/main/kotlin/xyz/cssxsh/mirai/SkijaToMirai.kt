@@ -1,7 +1,7 @@
 package xyz.cssxsh.mirai
 
+import io.github.humbleui.skija.*
 import net.mamoe.mirai.utils.*
-import org.jetbrains.skija.*
 
 /**
  * 从 [Surface] 获取图片快照资源

@@ -12,7 +12,6 @@ version = "1.0.0-RC1"
 repositories {
     mavenLocal()
     mavenCentral()
-    maven(url = "https://packages.jetbrains.team/maven/p/skija/maven")
 }
 
 mavenCentralPublish {
@@ -25,10 +24,11 @@ mavenCentralPublish {
 }
 
 dependencies {
-    api("org.jetbrains.skija:skija-macos-x64:0.93.6")
-    api("org.jetbrains.skija:skija-macos-arm64:0.93.6")
-    api("org.jetbrains.skija:skija-linux:0.93.1")
-    api("org.jetbrains.skija:skija-windows:0.93.6")
+    api("io.github.humbleui:skija-macos-x64:0.98.1")
+    api("io.github.humbleui:skija-macos-arm64:0.98.1")
+    api("io.github.humbleui:skija-linux:0.98.1")
+    api("io.github.humbleui:skija-windows:0.98.1")
+    compileOnly("org.projectlombok:lombok:1.18.22")
     compileOnly("net.mamoe:mirai-core-utils:2.10.0-RC2")
     //
     testImplementation(kotlin("test", "1.6.0"))
