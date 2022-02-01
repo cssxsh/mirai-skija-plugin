@@ -44,4 +44,14 @@ public object FontStyles {
      * 幼圆
      */
     public val YouYuan: FontStyleSet get() = manager.matchFamily("YouYuan")
+
+    /**
+     * Arial
+     */
+    public val Arial: FontStyleSet get() = manager.matchFamily("Arial")
+
+    /**
+     * Helvetica
+      */
+    public val Helvetica: FontStyleSet get() = manager.matchFamily("Helvetica")
 }

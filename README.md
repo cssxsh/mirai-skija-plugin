@@ -12,3 +12,7 @@ Please replace `org.jetbrains.skija` to `io.github.humbleui.skija`
 
 [SkijaToMirai](src/main/kotlin/xyz/cssxsh/mirai/SkijaToMirai.kt)  
 [SkijaExternalResource](src/main/kotlin/xyz/cssxsh/mirai/SkijaExternalResource.kt)  
+
+## Example
+
+[Example](src/main/kotlin/xyz/cssxsh/skija/Example.kt)
