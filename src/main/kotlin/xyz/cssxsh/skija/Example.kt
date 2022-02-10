@@ -6,10 +6,10 @@ import io.github.humbleui.types.*
 /**
  * 构造 PornPub 标志
  */
-public fun pornhub(pre: String = "Porn", suf: String = "Hub"): Surface {
+public fun pornhub(porn: String = "Porn", hub: String = "Hub"): Surface {
     val font = Font(FontStyles.Arial.matchStyle(FontStyle.BOLD)!!, 90F)
-    val prefix = TextLine.make(pre, font)
-    val suffix = TextLine.make(suf, font)
+    val prefix = TextLine.make(porn, font)
+    val suffix = TextLine.make(hub, font)
     val black = Paint().apply { color = 0xFF000000.toInt() }
     val white = Paint().apply { color = 0xFFFFFFFF.toInt() }
     val yellow = Paint().apply { color = 0xFFFF9000.toInt() }
