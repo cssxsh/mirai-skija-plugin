@@ -39,20 +39,19 @@ public object AtkinsonDitherer {
 
     private fun Color.nearest(): Int = red * red + green * green + blue * blue
 
-    public fun dither(image: Bitmap, new: IntArray): IntArray {
-        val width = image.width
-        val height = image.height
-        val colors = Array(height) { y -> Array(width) { x -> Color(rgb = image.getColor(x, y)) } }
-        val newColors = List(new.size) { index -> Color(rgb = new[index]) }
+    public fun dither(bitmap: Bitmap, table: IntArray): IntArray {
+        val width = bitmap.width
+        val height = bitmap.height
+        val colors = Array(height) { y -> Array(width) { x -> Color(rgb = bitmap.getColor(x, y)) } }
+        val tableColors = List(table.size) { index -> Color(rgb = table[index]) }
 
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val original = colors[y][x]
-                val replacement = newColors.minByOrNull { (it - original).nearest() }!!
+                val replacement = tableColors.minByOrNull { (it - original).nearest() }!!
                 colors[y][x] = replacement
                 val error = original - replacement
                 for (component in DISTRIBUTION) {
-                    8 * 5
                     val siblingX = x + component.deltaX
                     val siblingY = y + component.deltaY
                     if (siblingX in 0 until width && siblingY in 0 until height) {
@@ -63,14 +62,21 @@ public object AtkinsonDitherer {
             }
         }
 
-        return colors.flatten().map {
-            var rgb = 0
+        val new = IntArray(bitmap.width * bitmap.height)
 
-            rgb = (rgb or it.red) shl 8
-            rgb = (rgb or it.green) shl 8
-            rgb = (rgb or it.blue)
+        for ((y, lines) in colors.withIndex()) {
+            for ((x, cell) in lines.withIndex()) {
+                new[y * width + x] = if (bitmap.getAlphaf(x, y) < 0.5F) {
+                    Int.MIN_VALUE
+                } else {
+                    var rgb = cell.red shl 8
+                    rgb = (rgb or cell.green) shl 8
+                    rgb = (rgb or cell.blue)
+                    rgb
+                }
+            }
+        }
 
-            rgb
-        }.toIntArray()
+        return new
     }
 }

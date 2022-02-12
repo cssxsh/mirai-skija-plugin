@@ -28,7 +28,7 @@ public object GraphicControlExtension {
         disposalMethod: DisposalMethod,
         userInput: Boolean,
         transparencyIndex: Int?,
-        delayMills: Int
+        delay: Double
     ) {
         // Not Interlaced Images, TODO reserved
         var flags = 0x0000
@@ -45,7 +45,7 @@ public object GraphicControlExtension {
         block(
             buffer = buffer,
             flags = flags.asUnsignedByte(),
-            delay = (delayMills / 10).asUnsignedShort(),
+            delay = (delay * 100).toInt().asUnsignedShort(),
             transparencyIndex = (transparencyIndex ?: 0).asUnsignedByte()
         )
     }

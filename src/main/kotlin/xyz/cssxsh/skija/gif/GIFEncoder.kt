@@ -15,19 +15,21 @@ public class GIFEncoder(public val buffer: ByteBuffer) {
 
     public var method: DisposalMethod = DisposalMethod.UNSPECIFIED
 
-    public var delay: Int = 100
+    public var delay: Double = 1.0
 
-    public fun header(): GIFEncoder = apply {
-        buffer.put(GIF_HEADER.toByteArray(Charsets.US_ASCII))
-    }
+    public var transparency: Int? = null
+
+    public fun header(): GIFEncoder = apply { buffer.put(GIF_HEADER.toByteArray(Charsets.US_ASCII)) }
 
     public fun table(bitmap: Bitmap): GIFEncoder = apply {
         table = ColorTable(OctTreeQuantizer.quantize(bitmap, 256))
     }
 
-    public fun delay(second: Double): GIFEncoder = apply {
-        delay = (second * 100).toInt()
-    }
+    public fun method(value: DisposalMethod): GIFEncoder = apply { method = value }
+
+    public fun delay(second: Double): GIFEncoder = apply { delay = second }
+
+    public fun transparency(index: Int): GIFEncoder = apply { transparency = index }
 
     public fun screen(width: Int, height: Int): GIFEncoder = apply {
         LogicalScreenDescriptor.write(buffer, width, height, table, 0)
@@ -42,13 +44,11 @@ public class GIFEncoder(public val buffer: ByteBuffer) {
         ApplicationExtension.loop(buffer, count)
     }
 
-    public fun method(value: DisposalMethod): GIFEncoder = apply { method = value }
-
     public fun frame(bitmap: Bitmap): GIFEncoder = apply { frame(bitmap, delay, method, table) }
 
-    public fun frame(bitmap: Bitmap, delay: Int, method: DisposalMethod, table: ColorTable): GIFEncoder = apply {
+    public fun frame(bitmap: Bitmap, delay: Double, method: DisposalMethod, table: ColorTable): GIFEncoder = apply {
 
-        GraphicControlExtension.write(buffer, method, false, null, delay)
+        GraphicControlExtension.write(buffer, method, false, transparency, delay)
 
         val result = AtkinsonDitherer.dither(bitmap, table.colors)
 
@@ -64,7 +64,5 @@ public class GIFEncoder(public val buffer: ByteBuffer) {
         )
     }
 
-    public fun trailer(): GIFEncoder = apply {
-        buffer.put(GIF_TRAILER.asUnsignedByte())
-    }
+    public fun trailer(): GIFEncoder = apply { buffer.put(GIF_TRAILER.asUnsignedByte()) }
 }

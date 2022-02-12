@@ -6,6 +6,7 @@ public class ColorTable(
     public val colors: IntArray,
     public val sort: Boolean = false,
     public val background: Int = 0,
+    public val transparency: Int = colors.size - 1
 ) {
     public companion object {
         private val Sizes = listOf(0, 2, 4, 8, 16, 32, 64, 128, 256)
