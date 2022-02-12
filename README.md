@@ -4,8 +4,7 @@
 
 [![maven-central](https://img.shields.io/maven-central/v/xyz.cssxsh.mirai/mirai-skija-plugin)](https://search.maven.org/artifact/xyz.cssxsh.mirai/mirai-skija-plugin)
 
-Be based on <https://github.com/HumbleUI/Skija>
-
+Be based on <https://github.com/HumbleUI/Skija>  
 Please replace `org.jetbrains.skija` to `io.github.humbleui.skija`
 
 ## SkijaToMirai

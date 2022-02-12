@@ -9,8 +9,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.cancel
-import net.mamoe.mirai.utils.info
+import kotlinx.coroutines.*
+import net.mamoe.mirai.utils.*
 import java.io.File
 
 private val logger get() = MiraiSkijaPlugin.logger
@@ -23,12 +23,8 @@ private val http = HttpClient(OkHttp) {
     }
 }
 
-internal suspend fun download(urlString: String, folder: File): File {
-    val url = Url(urlString)
-
-    MiraiSkijaPlugin.getResourceAsStream("")
-
-    return http.get<HttpStatement>(url).execute { response ->
+internal suspend fun download(urlString: String, folder: File): File = supervisorScope {
+    http.get<HttpStatement>(urlString).execute { response ->
         val relative = response.headers[HttpHeaders.ContentDisposition]
             ?.let { ContentDisposition.parse(it).parameter(ContentDisposition.Parameters.FileName) }
             ?: response.request.url.encodedPath.substringAfterLast('/').decodeURLPart()

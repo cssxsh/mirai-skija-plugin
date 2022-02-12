@@ -14,15 +14,17 @@ public object MiraiSkijaPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "xyz.cssxsh.mirai.mirai-skija-plugin",
         name = "mirai-skija-plugin",
-        version = "1.0.0-RC2",
+        version = "1.0.0-RC3",
     ) {
         author("cssxsh")
     }
 ) {
     /**
-     * 字体管理器，可以通过 [loadTypeface] 批量加载
+     * 字体管理器，可以通过 [download] 批量加载
      */
     public val fontProvider: TypefaceFontProvider by lazy { TypefaceFontProvider() }
+
+    private val fonts get() = dataFolder.resolve("fonts")
 
     /**
      * 从指定目录加载字体到 [fontProvider]
@@ -39,13 +41,11 @@ public object MiraiSkijaPlugin : KotlinPlugin(
         }
     }
 
-    private val fonts get() = dataFolder.resolve("fonts")
-
     /**
      * 加载字体
      */
     @JvmSynthetic
-    public suspend fun download(vararg links: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun loadTypeface(vararg links: String): Unit = withContext(Dispatchers.IO) {
         val downloaded = mutableListOf<File>()
         val download = fonts.resolve("download")
 
@@ -62,7 +62,7 @@ public object MiraiSkijaPlugin : KotlinPlugin(
         for (pack in downloaded) {
             when (pack.extension) {
                 "7z" -> {
-                    ProcessBuilder(sevenZA(folder = fonts).absolutePath, "x", pack.absolutePath, "-y")
+                    ProcessBuilder(sevenZA(folder = download).absolutePath, "x", pack.absolutePath, "-y")
                         .directory(fonts)
                         .start()
                         // 防止卡顿
@@ -92,6 +92,12 @@ public object MiraiSkijaPlugin : KotlinPlugin(
         loadTypeface(folder = fonts)
     }
 
+    @JvmSynthetic
+    public suspend fun loadPetPetSprite(): Unit = withContext(Dispatchers.IO) {
+        val sprite = download(urlString = "https://benisland.neocities.org/petpet/img/sprite.png", dataFolder)
+        System.setProperty(PET_PET_SPRITE, sprite.absolutePath)
+    }
+
     override fun onEnable() {
         loadTypeface(folder = fonts)
 
@@ -99,8 +105,10 @@ public object MiraiSkijaPlugin : KotlinPlugin(
         logger.info { "fonts: ${fontProvider.makeFamilies().keys}" }
 
         launch {
+            loadPetPetSprite()
             if (fontProvider.familiesCount == 0) {
-                download(
+                logger.info { "字体文件夹为空，尝试下载 sarasa-gothic" }
+                loadTypeface(
                     "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/Sarasa%20Gothic%20version%200.35.8/sarasa-gothic-ttc-0.35.8.7z"
                 )
             }
