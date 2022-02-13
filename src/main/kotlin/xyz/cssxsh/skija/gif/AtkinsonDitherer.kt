@@ -66,6 +66,7 @@ public object AtkinsonDitherer {
 
         for ((y, lines) in colors.withIndex()) {
             for ((x, cell) in lines.withIndex()) {
+                // XXX Alpha
                 new[y * width + x] = if (bitmap.getAlphaf(x, y) < 0.5F) {
                     Int.MIN_VALUE
                 } else {

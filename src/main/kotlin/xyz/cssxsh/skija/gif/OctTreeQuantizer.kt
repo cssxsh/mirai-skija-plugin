@@ -10,16 +10,7 @@ import io.github.humbleui.skija.*
  *
  */
 public object OctTreeQuantizer {
-    private val mask = intArrayOf(
-        0x80,
-        0x40,
-        0x20,
-        0x10,
-        0x08,
-        0x04,
-        0x02,
-        0x01
-    )
+    private val mask = intArrayOf(0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01)
 
     private var leafCount = 0
     private var inIndex = 0

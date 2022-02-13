@@ -34,13 +34,8 @@ public object GraphicControlExtension {
         var flags = 0x0000
 
         flags = flags or disposalMethod.flag
-        if (userInput) {
-            flags = flags or 0x0002
-        }
-
-        if (transparencyIndex in 0..255) {
-            flags = flags or 0x0001
-        }
+        if (userInput) flags = flags or 0x0002
+        if (transparencyIndex in 0 until  256) flags = flags or 0x0001
 
         block(
             buffer = buffer,

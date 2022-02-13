@@ -23,12 +23,7 @@ internal object ApplicationExtension {
         buffer.put(TERMINATOR.asUnsignedByte())
     }
 
-    fun write(
-        buffer: ByteBuffer,
-        identifier: String,
-        authentication: String,
-        data: ByteArray
-    ) {
+    fun write(buffer: ByteBuffer, identifier: String, authentication: String, data: ByteArray) {
         block(
             buffer = buffer,
             identifier = identifier.toByteArray(Charsets.US_ASCII),
@@ -37,10 +32,7 @@ internal object ApplicationExtension {
         )
     }
 
-    internal fun loop(
-        buffer: ByteBuffer,
-        count: Int
-    ) {
+    fun loop(buffer: ByteBuffer, count: Int) {
         write(
             buffer = buffer,
             identifier = "NETSCAPE",

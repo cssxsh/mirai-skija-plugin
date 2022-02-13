@@ -20,13 +20,8 @@ internal fun Int.asRGBBytes(): ByteArray {
     )
 }
 
-@JvmOverloads
-public fun gif(capacity: Int = 1 shl 23, block: GIFEncoder.() -> Unit): Data {
-    val data = Data.makeFromBytes(ByteArray(capacity))
-    val encoder = GIFEncoder(data).apply {
-        header()
-        block()
-        trailer()
-    }
-    return data.makeSubset(0, encoder.buffer.position().toLong())
+public fun gif(width: Int, height: Int, block: GIFBuilder.() -> Unit): Data {
+    return GIFBuilder(width, height)
+        .apply(block)
+        .build()
 }

@@ -5,16 +5,15 @@ import java.nio.*
 public class ColorTable(
     public val colors: IntArray,
     public val sort: Boolean = false,
-    public val background: Int = 0,
-    public val transparency: Int = colors.size - 1
+    public val background: Int = colors.size - 1,
 ) {
     public companion object {
-        private val Sizes = listOf(0, 2, 4, 8, 16, 32, 64, 128, 256)
+        private val SizeList = listOf(0, 2, 4, 8, 16, 32, 64, 128, 256)
         public val Empty: ColorTable = ColorTable(IntArray(0))
     }
 
     init {
-        check(colors.size in Sizes) { "Size Not" }
+        check(colors.size in SizeList) { "Size Not" }
         check(colors.isEmpty() || background in colors.indices) { "Background Not" }
     }
 

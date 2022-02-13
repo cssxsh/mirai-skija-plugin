@@ -33,7 +33,7 @@ public fun pornhub(porn: String = "Porn", hub: String = "Hub"): Surface {
  * [PetPet Sprite Image Download](https://benisland.neocities.org/petpet/img/sprite.png)
  * @see PET_PET_SPRITE
  */
-public fun petpet(face: Image, delay: Double = 0.02): Data {
+public fun petpet(face: Image, second: Double = 0.02): Data {
     val sprite = try {
         Image.makeFromEncoded(File(System.getProperty(PET_PET_SPRITE, "sprite.png")).readBytes())
     } catch (cause: Throwable) {
@@ -65,13 +65,16 @@ public fun petpet(face: Image, delay: Double = 0.02): Data {
         requireNotNull(surface.makeImageSnapshot(rect)) { "Make image snapshot fail" }
     }
 
-    return gif {
+    return gif(112, 112) {
         table(bitmap = Bitmap.makeFromImage(surface.makeImageSnapshot()))
-        screen(width = 112, height = 112)
         loop(count = 0)
-        delay(second = delay)
-        method(value = DisposalMethod.RESTORE_TO_BACKGROUND)
-        transparency(index = 255)
-        for (image in images) frame(bitmap = Bitmap.makeFromImage(image))
+        options {
+            delay = second
+            method = DisposalMethod.RESTORE_TO_BACKGROUND
+            transparency = true
+        }
+        for (image in images) {
+            frame(bitmap = Bitmap.makeFromImage(image))
+        }
     }
 }

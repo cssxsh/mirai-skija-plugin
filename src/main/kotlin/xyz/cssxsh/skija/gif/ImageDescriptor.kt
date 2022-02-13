@@ -1,5 +1,6 @@
 package xyz.cssxsh.skija.gif
 
+import io.github.humbleui.types.IRect
 import java.nio.*
 
 public object ImageDescriptor {
@@ -35,16 +36,7 @@ public object ImageDescriptor {
         }
     }
 
-    internal fun write(
-        buffer: ByteBuffer,
-        left: Int,
-        top: Int,
-        width: Int,
-        height: Int,
-        table: ColorTable,
-        local: Boolean,
-        image: IntArray
-    ) {
+    internal fun write(buffer: ByteBuffer, rect: IRect, table: ColorTable, local: Boolean, image: IntArray) {
         // Not Interlaced Images
         var flags = 0x00
 
@@ -57,10 +49,10 @@ public object ImageDescriptor {
 
         block(
             buffer = buffer,
-            left = left.asUnsignedShort(),
-            top = top.asUnsignedShort(),
-            width = width.asUnsignedShort(),
-            height = height.asUnsignedShort(),
+            left = rect.left.asUnsignedShort(),
+            top = rect.top.asUnsignedShort(),
+            width = rect.width.asUnsignedShort(),
+            height = rect.height.asUnsignedShort(),
             flags = flags.asUnsignedByte()
         )
 
