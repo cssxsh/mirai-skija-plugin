@@ -3,10 +3,10 @@ package xyz.cssxsh.skija.gif
 import java.nio.*
 
 public object GraphicControlExtension {
-    private const val INTRODUCER = 0x0021
-    private const val LABEL = 0x00F9
-    private const val BLOCK_SIZE = 0x0004
-    private const val TERMINATOR = 0x0000
+    private const val INTRODUCER = 0x21
+    private const val LABEL = 0xF9
+    private const val BLOCK_SIZE = 0x04
+    private const val TERMINATOR = 0x00
 
     private fun block(
         buffer: ByteBuffer,
@@ -30,12 +30,12 @@ public object GraphicControlExtension {
         transparencyIndex: Int?,
         delay: Double
     ) {
-        // Not Interlaced Images, TODO reserved
+        // Not Interlaced Images
         var flags = 0x0000
 
         flags = flags or disposalMethod.flag
         if (userInput) flags = flags or 0x0002
-        if (transparencyIndex in 0 until  256) flags = flags or 0x0001
+        if (transparencyIndex in 0 until 256) flags = flags or 0x0001
 
         block(
             buffer = buffer,

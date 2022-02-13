@@ -2,11 +2,11 @@ package xyz.cssxsh.skija.gif
 
 import java.nio.*
 
-internal object ApplicationExtension {
-    private const val INTRODUCER = 0x0021
-    private const val LABEL = 0x00FF
-    private const val BLOCK_SIZE = 0x000B
-    private const val TERMINATOR = 0x0000
+public object ApplicationExtension {
+    private const val INTRODUCER = 0x21
+    private const val LABEL = 0xFF
+    private const val BLOCK_SIZE = 0x0B
+    private const val TERMINATOR = 0x00
 
     private fun block(
         buffer: ByteBuffer,
@@ -19,11 +19,12 @@ internal object ApplicationExtension {
         buffer.put(BLOCK_SIZE.asUnsignedByte())
         buffer.put(identifier) // 8 byte
         buffer.put(authentication) // 3 byte
+        buffer.put(data.size.asUnsignedByte())
         buffer.put(data)
         buffer.put(TERMINATOR.asUnsignedByte())
     }
 
-    fun write(buffer: ByteBuffer, identifier: String, authentication: String, data: ByteArray) {
+    internal fun write(buffer: ByteBuffer, identifier: String, authentication: String, data: ByteArray) {
         block(
             buffer = buffer,
             identifier = identifier.toByteArray(Charsets.US_ASCII),
@@ -32,14 +33,40 @@ internal object ApplicationExtension {
         )
     }
 
-    fun loop(buffer: ByteBuffer, count: Int) {
+    public fun loop(buffer: ByteBuffer, count: Int) {
         write(
             buffer = buffer,
             identifier = "NETSCAPE",
             authentication = "2.0",
-            data = byteArrayOf(0x03, 0x01)
+            data = byteArrayOf(
+                0x01,
+                count.ushr(8).toByte(),
+                count.ushr(0).toByte()
+            )
         )
+    }
 
-        buffer.putShort(count.asUnsignedShort())
+    public fun buffering(buffer: ByteBuffer, capacity: Int) {
+        write(
+            buffer = buffer,
+            identifier = "NETSCAPE",
+            authentication = "2.0",
+            data = byteArrayOf(
+                0x01,
+                capacity.ushr(24).toByte(),
+                capacity.ushr(16).toByte(),
+                capacity.ushr(8).toByte(),
+                capacity.ushr(0).toByte()
+            )
+        )
+    }
+
+    public fun profile(buffer: ByteBuffer, data: ByteArray) {
+        write(
+            buffer = buffer,
+            identifier = "ICCRGBG1",
+            authentication = "012",
+            data = data
+        )
     }
 }

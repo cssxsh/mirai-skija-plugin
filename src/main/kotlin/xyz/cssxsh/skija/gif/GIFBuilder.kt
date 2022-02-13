@@ -14,19 +14,38 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
 
     internal fun trailer(buffer: ByteBuffer) = buffer.put(GIF_TRAILER.toByteArray(Charsets.US_ASCII))
 
-    private var capacity = 1 shl 23
+    internal var capacity = 1 shl 23
 
+    /**
+     * [ByteBuffer.capacity]
+     */
     public fun capacity(total: Int): GIFBuilder = apply { capacity = total }
 
-    private var loop = 0
+    internal var loop = 0
 
+    /**
+     * Netscape Looping Application Extension, 0 is infinite times
+     * @see [ApplicationExtension.loop]
+     */
     public fun loop(count: Int): GIFBuilder = apply { loop = count }
 
-    public var ratio: Int = 0
+    internal var buffering = 0
 
+    /**
+     * Netscape Buffering Application Extension
+     * @see [ApplicationExtension.buffering]
+     */
+    public fun buffering(open: Boolean): GIFBuilder = apply { buffering = if (open) 0x0001_0000 else 0x0000_0000 }
+
+    internal var ratio: Int = 0
+
+    /**
+     * Pixel Aspect Ratio
+     * @see [LogicalScreenDescriptor.write]
+     */
     public fun ratio(size: Int): GIFBuilder = apply { ratio = size }
 
-    public var options: FrameOptions = FrameOptions(
+    internal var options: FrameOptions = FrameOptions(
         method = DisposalMethod.UNSPECIFIED,
         input = false,
         transparency = false,
@@ -35,17 +54,27 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
         rect = IRect(0, 0, 0, 0)
     )
 
+    /**
+     * GlobalFrameOptions
+     */
+    public fun options(block: FrameOptions.() -> Unit): GIFBuilder = apply { options.apply(block) }
+
+    /**
+     * GlobalColorTable
+     * @see [OctTreeQuantizer.quantize]
+     */
     public fun table(bitmap: Bitmap): GIFBuilder = apply {
         options.table = ColorTable(OctTreeQuantizer.quantize(bitmap, 256))
     }
 
+    /**
+     * GlobalColorTable
+     */
     public fun table(value: ColorTable): GIFBuilder = apply {
         options.table = value
     }
 
-    public fun options(block: FrameOptions.() -> Unit): GIFBuilder = apply { options.apply(block) }
-
-    public var frames: MutableList<Pair<Bitmap, FrameOptions>> = ArrayList()
+    internal var frames: MutableList<Pair<Bitmap, FrameOptions>> = ArrayList()
 
     public fun frame(bitmap: Bitmap, block: FrameOptions.() -> Unit = {}): GIFBuilder = apply {
         val rect = IRect(0, 0, bitmap.width, bitmap.height)
@@ -57,7 +86,8 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
 
         header(buffer)
         LogicalScreenDescriptor.write(buffer, width, height, options.table, ratio)
-        ApplicationExtension.loop(buffer, loop)
+        if (loop >= 0) ApplicationExtension.loop(buffer, loop)
+        if (buffering > 0) ApplicationExtension.buffering(buffer, buffering)
         for ((bitmap, options) in frames) {
             val table = when {
                 options.table.exists() -> options.table

@@ -65,7 +65,7 @@ public fun petpet(face: Image, second: Double = 0.02): Data {
         requireNotNull(surface.makeImageSnapshot(rect)) { "Make image snapshot fail" }
     }
 
-    return gif(112, 112) {
+    return gif(width = 112, height = 112) {
         table(bitmap = Bitmap.makeFromImage(surface.makeImageSnapshot()))
         loop(count = 0)
         options {
