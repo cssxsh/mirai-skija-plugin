@@ -79,14 +79,14 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
         val data = Data.makeFromBytes(ByteArray(capacity))
         val buffer = data.toByteBuffer()
         build(buffer = buffer)
-        return data.makeSubset(0, buffer.remaining().toLong())
+        return data.makeSubset(0, buffer.position().toLong())
     }
 
     public fun build(): ByteArray {
         val buffer = ByteBuffer.allocate(capacity)
         build(buffer = buffer)
 
-        return ByteArray(buffer.remaining()).also { buffer.get(it) }
+        return ByteArray(buffer.position()).also { buffer.get(it) }
     }
 
     public data class FrameOptions(
