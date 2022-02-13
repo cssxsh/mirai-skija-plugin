@@ -23,5 +23,5 @@ internal fun Int.asRGBBytes(): ByteArray {
 public fun gif(width: Int, height: Int, block: GIFBuilder.() -> Unit): Data {
     return GIFBuilder(width, height)
         .apply(block)
-        .build()
+        .data()
 }

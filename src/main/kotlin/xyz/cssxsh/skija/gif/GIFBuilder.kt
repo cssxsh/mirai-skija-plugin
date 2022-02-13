@@ -52,9 +52,8 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
         frames.add(bitmap to options.copy(table = this.options.table, rect = rect).apply(block))
     }
 
-    public fun build(): Data {
-        val data = Data.makeFromBytes(ByteArray(capacity))
-        val buffer = data.toByteBuffer().order(ByteOrder.LITTLE_ENDIAN)
+    public fun build(buffer: ByteBuffer) {
+        buffer.order(ByteOrder.LITTLE_ENDIAN)
 
         header(buffer)
         LogicalScreenDescriptor.write(buffer, width, height, options.table, ratio)
@@ -74,8 +73,20 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
             ImageDescriptor.write(buffer, options.rect, table, table !== this.options.table, result)
         }
         trailer(buffer)
+    }
 
-        return data.makeSubset(0, buffer.position().toLong())
+    public fun data(): Data {
+        val data = Data.makeFromBytes(ByteArray(capacity))
+        val buffer = data.toByteBuffer()
+        build(buffer = buffer)
+        return data.makeSubset(0, buffer.remaining().toLong())
+    }
+
+    public fun build(): ByteArray {
+        val buffer = ByteBuffer.allocate(capacity)
+        build(buffer = buffer)
+
+        return ByteArray(buffer.remaining()).also { buffer.get(it) }
     }
 
     public data class FrameOptions(
