@@ -41,8 +41,9 @@ public object MiraiSkijaPlugin : KotlinPlugin(
         folder.mkdirs()
         for (file in folder.listFiles().orEmpty()) {
             when (file.extension) {
-                "ttf" -> fontProvider.registerTypeface(Typeface.makeFromFile(file.path), file.nameWithoutExtension)
-                "ttc" -> fontProvider.registerTypeface(Typeface.makeFromFile(file.path), file.nameWithoutExtension)
+                "ttf" -> fontProvider.registerTypeface(Typeface.makeFromFile(file.path))
+                "ttc" -> fontProvider.registerTypeface(Typeface.makeFromFile(file.path))
+                "otf" -> fontProvider.registerTypeface(Typeface.makeFromFile(file.path))
                 else -> continue
             }
         }
@@ -121,7 +122,9 @@ public object MiraiSkijaPlugin : KotlinPlugin(
             if (fontProvider.familiesCount == 0) {
                 logger.info { "字体文件夹为空，尝试下载 sarasa-gothic" }
                 loadTypeface(
-                    "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/Sarasa%20Gothic%20version%200.35.8/sarasa-gothic-ttc-0.35.8.7z"
+                    "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/Sarasa%20Gothic%20version%200.35.8/sarasa-gothic-ttc-0.35.8.7z",
+                    "http://dl.font.im/Noto_Sans.zip",
+                    "http://dl.font.im/Noto_Serif.zip"
                 )
             }
         }
@@ -151,6 +154,12 @@ public object MiraiSkijaPlugin : KotlinPlugin(
                     .split(' ').filterNot { it.isBlank() }
                     .toTypedArray()
                 subject.uploadImage(resource = shout(lines = lines).makeSnapshotResource())
+            }
+            """^#choyen\s+(\S+)\s+(\S+)""".toRegex() findingReply { result ->
+                logger.info { "choyen ${result.value}" }
+                val (top, bottom) = result.destructured
+
+                subject.uploadImage(resource = choyen(top, bottom, fontProvider).makeSnapshotResource())
             }
         }
     }
