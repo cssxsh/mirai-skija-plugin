@@ -5,7 +5,14 @@ import io.github.humbleui.skija.impl.*
 import io.github.humbleui.skija.paragraph.*
 import kotlinx.coroutines.*
 import net.mamoe.mirai.console.plugin.jvm.*
+import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.event.*
+import net.mamoe.mirai.message.data.At
+import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.message.data.findIsInstance
+import net.mamoe.mirai.message.data.firstIsInstance
 import net.mamoe.mirai.utils.*
+import xyz.cssxsh.mirai.*
 import xyz.cssxsh.skija.*
 import java.io.*
 import java.util.zip.*
@@ -93,9 +100,14 @@ public object MiraiSkijaPlugin : KotlinPlugin(
     }
 
     @JvmSynthetic
-    public suspend fun loadPetPetSprite(): Unit = withContext(Dispatchers.IO) {
+    public suspend fun loadFace(): Unit = withContext(Dispatchers.IO) {
         val sprite = download(urlString = "https://benisland.neocities.org/petpet/img/sprite.png", dataFolder)
         System.setProperty(PET_PET_SPRITE, sprite.absolutePath)
+        val background = download(
+            urlString = "https://mirai.mamoe.net/assets/uploads/files/1644858542844-background.png",
+            dataFolder
+        )
+        System.setProperty(SHOUT_BACKGROUND, background.absolutePath)
     }
 
     override fun onEnable() {
@@ -105,12 +117,44 @@ public object MiraiSkijaPlugin : KotlinPlugin(
         logger.info { "fonts: ${fontProvider.makeFamilies().keys}" }
 
         launch {
-            loadPetPetSprite()
+            loadFace()
             if (fontProvider.familiesCount == 0) {
                 logger.info { "字体文件夹为空，尝试下载 sarasa-gothic" }
                 loadTypeface(
                     "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/Sarasa%20Gothic%20version%200.35.8/sarasa-gothic-ttc-0.35.8.7z"
                 )
+            }
+        }
+
+        // Test
+        globalEventChannel().subscribeMessages {
+            """^(#ph) (\S+) (\S+)""".toRegex() findingReply { result ->
+                logger.info { "ph ${result.value}" }
+                val (_, porn, hub) = result.destructured
+
+                subject.uploadImage(resource = pornhub(porn, hub).makeSnapshotResource())
+            }
+            """^#pet( \d+(?:\.\d+)?)?""".toRegex() findingReply { result ->
+                logger.info { "pet ${result.value}" }
+                val delay = result.groups[1]?.value?.toDoubleOrNull() ?: 0.02
+                val user = message.findIsInstance<At>()?.target?.let { (subject as? Group)?.get(it) } ?: sender
+                val file = dataFolder.resolve("${user.id}.jpg")
+                if (file.exists().not()) download(urlString = user.avatarUrl, folder = dataFolder).renameTo(file)
+                val face = Image.makeFromEncoded(file.readBytes())
+
+                subject.uploadImage(resource = SkijaExternalResource(origin = petpet(face, delay), formatName = "gif"))
+            }
+            """^#shout(.+)""".toRegex() findingReply { result ->
+                logger.info { "shit ${result.value}" }
+                val user = message.findIsInstance<At>()?.target?.let { (subject as? Group)?.get(it) } ?: sender
+                val file = dataFolder.resolve("${user.id}.jpg")
+                if (file.exists().not()) download(urlString = user.avatarUrl, folder = dataFolder).renameTo(file)
+                val face = Image.makeFromEncoded(file.readBytes())
+                val lines = message.firstIsInstance<PlainText>().content
+                    .removePrefix("#shout")
+                    .split(' ').filterNot { it.isBlank() }
+                    .toTypedArray()
+                subject.uploadImage(resource = shout(face, *lines).makeSnapshotResource())
             }
         }
     }

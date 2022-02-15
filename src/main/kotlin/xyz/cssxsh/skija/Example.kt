@@ -7,6 +7,8 @@ import java.io.*
 
 internal const val PET_PET_SPRITE = "xyz.cssxsh.skija.petpet"
 
+internal const val SHOUT_BACKGROUND = "xyz.cssxsh.skija.shout"
+
 /**
  * 构造 PornPub Logo
  */
@@ -38,7 +40,7 @@ public fun petpet(face: Image, second: Double = 0.02): Data {
         Image.makeFromEncoded(File(System.getProperty(PET_PET_SPRITE, "sprite.png")).readBytes())
     } catch (cause: Throwable) {
         throw IllegalStateException(
-            "please download https://benisland.neocities.org/petpet/img/sprite.png, file path set property $PET_PET_SPRITE",
+            "please download https://benisland.neocities.org/petpet/img/sprite.png , file path set property $PET_PET_SPRITE",
             cause
         )
     }
@@ -77,4 +79,49 @@ public fun petpet(face: Image, second: Double = 0.02): Data {
             frame(bitmap = Bitmap.makeFromImage(image))
         }
     }
+}
+
+/**
+ * Shout Face
+ * @see SHOUT_BACKGROUND
+ */
+public fun shout(face: Image, vararg lines: String): Surface {
+    val background = try {
+        Image.makeFromEncoded(File(System.getProperty(SHOUT_BACKGROUND, "shit.png")).readBytes())
+    } catch (cause: Throwable) {
+        throw IllegalStateException(
+            "please download https://mirai.mamoe.net/assets/uploads/files/1644858542844-background.png , file path set property $SHOUT_BACKGROUND",
+            cause
+        )
+    }
+    val surface = Surface.makeRasterN32Premul(535, 500)
+    val rect = Rect.makeXYWH(50F,70F,200F,200F)
+    val black = Paint().setColor(0xFF000000.toInt())
+
+    surface.canvas.drawImageRect(face, rect)
+    surface.canvas.drawImage(background, 0F, 0F)
+
+    when (lines.size) {
+        1 -> {
+            val size = 50F
+            val font = Font(FontStyles.SimHei.matchStyle(FontStyle.BOLD)!!, size)
+            val (line) = lines
+            for((index, word) in line.withIndex()) {
+                surface.canvas.drawString(word.toString(), 430F, (index + 1) * size, font, black)
+            }
+        }
+        2 -> {
+            val size = 40F
+            val font = Font(FontStyles.SimHei.matchStyle(FontStyle.BOLD)!!, size)
+            val (first, second) = lines
+            for((index, word) in first.withIndex()) {
+                surface.canvas.drawString(word.toString(), 400F, (index + 1) * size, font, black)
+            }
+            for((index, word) in second.withIndex()) {
+                surface.canvas.drawString(word.toString(), 450F, (index + 1) * size, font, black)
+            }
+        }
+    }
+
+    return surface
 }
