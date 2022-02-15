@@ -1,15 +1,12 @@
 package xyz.cssxsh.mirai.plugin
 
-import io.github.humbleui.skija.*
-import io.github.humbleui.skija.impl.*
+import io.github.humbleui.skija.Image as SkijaImage
+import io.github.humbleui.skija.impl.Platform as SkijaPlatform
 import kotlinx.coroutines.*
 import net.mamoe.mirai.console.plugin.jvm.*
-import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.event.*
-import net.mamoe.mirai.message.data.At
-import net.mamoe.mirai.message.data.PlainText
-import net.mamoe.mirai.message.data.findIsInstance
-import net.mamoe.mirai.message.data.firstIsInstance
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.*
 import xyz.cssxsh.mirai.*
 import xyz.cssxsh.skija.*
@@ -42,15 +39,15 @@ public object MiraiSkijaPlugin : KotlinPlugin(
 
     override fun onEnable() {
         launch {
-            logger.info { "platform: ${Platform.CURRENT}" }
+            logger.info { "platform: ${SkijaPlatform.CURRENT}" }
             loadFace()
-            MiraiTypefaceFontProvider.INSTANCE.loadTypeface(
+            MiraiTypefaceFontProvider.loadTypeface(
                 folder = fonts,
                 "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/Sarasa%20Gothic%20version%200.35.8/sarasa-gothic-ttc-0.35.8.7z",
                 "http://dl.font.im/Noto_Sans.zip",
                 "http://dl.font.im/Noto_Serif.zip"
             )
-            logger.info { "fonts: ${MiraiTypefaceFontProvider.INSTANCE.makeFamilies().keys}" }
+            logger.info { "fonts: ${MiraiTypefaceFontProvider.makeFamilies().keys}" }
         }
 
         // Test
@@ -67,7 +64,7 @@ public object MiraiSkijaPlugin : KotlinPlugin(
                 val user = message.findIsInstance<At>()?.target?.let { (subject as? Group)?.get(it) } ?: sender
                 val file = dataFolder.resolve("${user.id}.jpg")
                 if (file.exists().not()) download(urlString = user.avatarUrl, folder = dataFolder).renameTo(file)
-                val face = Image.makeFromEncoded(file.readBytes())
+                val face = SkijaImage.makeFromEncoded(file.readBytes())
 
                 subject.uploadImage(resource = SkijaExternalResource(origin = petpet(face, delay), formatName = "gif"))
             }

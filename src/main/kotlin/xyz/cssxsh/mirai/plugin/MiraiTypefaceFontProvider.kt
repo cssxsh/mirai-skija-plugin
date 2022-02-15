@@ -8,12 +8,10 @@ import xyz.cssxsh.skija.FontStyles
 import java.io.*
 import java.util.zip.*
 
-public class MiraiTypefaceFontProvider : TypefaceFontProvider() {
-    public companion object {
-        @JvmStatic
-        public val INSTANCE: MiraiTypefaceFontProvider by lazy {
-            FontStyles.services().first { it is MiraiTypefaceFontProvider } as MiraiTypefaceFontProvider
-        }
+public object MiraiTypefaceFontProvider : TypefaceFontProvider() {
+
+    init {
+        FontStyles.instances.add(this)
     }
 
     /**
