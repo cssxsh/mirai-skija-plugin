@@ -12,8 +12,8 @@ internal const val SHOUT_BACKGROUND = "xyz.cssxsh.skija.shout"
 /**
  * 构造 PornPub Logo
  */
-public fun pornhub(porn: String = "Porn", hub: String = "Hub"): Surface {
-    val font = Font(FontStyles.Arial.matchStyle(FontStyle.BOLD)!!, 90F)
+public fun pornhub(porn: String = "Porn", hub: String = "Hub", manager: FontMgr = FontMgr.getDefault()): Surface {
+    val font = Font(manager.matchFamily("Arial").matchStyle(FontStyle.BOLD)!!, 90F)
     val prefix = TextLine.make(porn, font)
     val suffix = TextLine.make(hub, font)
     val black = Paint().setColor(0xFF000000.toInt())
