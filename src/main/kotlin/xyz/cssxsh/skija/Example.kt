@@ -85,7 +85,7 @@ public fun petpet(face: Image, second: Double = 0.02): Data {
  * Shout Face
  * @see SHOUT_BACKGROUND
  */
-public fun shout(face: Image, vararg lines: String): Surface {
+public fun shout(vararg lines: String, manager: FontMgr = FontMgr.getDefault()): Surface {
     val background = try {
         Image.makeFromEncoded(File(System.getProperty(SHOUT_BACKGROUND, "shit.png")).readBytes())
     } catch (cause: Throwable) {
@@ -95,30 +95,28 @@ public fun shout(face: Image, vararg lines: String): Surface {
         )
     }
     val surface = Surface.makeRasterN32Premul(535, 500)
-    val rect = Rect.makeXYWH(50F,70F,200F,200F)
-    val black = Paint().setColor(0xFF000000.toInt())
+    val black = Paint().setColor(Color.makeRGB(0,0,0))
 
-    surface.canvas.drawImageRect(face, rect)
     surface.canvas.drawImage(background, 0F, 0F)
 
     when (lines.size) {
         1 -> {
             val size = 50F
-            val font = Font(FontStyles.SimHei.matchStyle(FontStyle.BOLD)!!, size)
+            val font = Font(manager.matchFamily("SimHei").matchStyle(FontStyle.BOLD)!!, size)
             val (line) = lines
-            for((index, word) in line.withIndex()) {
-                surface.canvas.drawString(word.toString(), 430F, (index + 1) * size, font, black)
+            for ((index, word) in line.withIndex()) {
+                surface.canvas.drawString(word.toString(), 430F, 80F + index * size, font, black)
             }
         }
         2 -> {
-            val size = 40F
+            val size = 50F
             val font = Font(FontStyles.SimHei.matchStyle(FontStyle.BOLD)!!, size)
             val (first, second) = lines
-            for((index, word) in first.withIndex()) {
-                surface.canvas.drawString(word.toString(), 400F, (index + 1) * size, font, black)
+            for ((index, word) in first.withIndex()) {
+                surface.canvas.drawString(word.toString(), 380F, 80F + index * size, font, black)
             }
-            for((index, word) in second.withIndex()) {
-                surface.canvas.drawString(word.toString(), 450F, (index + 1) * size, font, black)
+            for ((index, word) in second.withIndex()) {
+                surface.canvas.drawString(word.toString(), 450F, 80F + index * size, font, black)
             }
         }
     }
