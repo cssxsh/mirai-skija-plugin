@@ -1,57 +1,93 @@
 package xyz.cssxsh.skija
 
 import io.github.humbleui.skija.*
+import io.github.humbleui.skija.paragraph.*
+import java.util.*
+import kotlin.collections.*
+import kotlin.jvm.*
 
 public object FontStyles {
-    private val manager: FontMgr = FontMgr.getDefault()
+    private val default: FontMgr = FontMgr.getDefault()
+
+    public fun services(): ServiceLoader<TypefaceFontProvider> {
+        return ServiceLoader.load(TypefaceFontProvider::class.java, this::class.java.classLoader)
+    }
 
     /**
      * 系统默认字体列表
      */
-    public fun families(): Map<String, FontStyleSet> = manager.makeFamilies()
+    public fun families(): Set<String> {
+        val names: MutableSet<String> = HashSet()
+        repeat(default.familiesCount) { index -> names.add(default.getFamilyName(index)) }
+        for (manager in services()) {
+            repeat(manager.familiesCount) { index -> names.add(manager.getFamilyName(index)) }
+        }
+
+        return names
+    }
+
+    /**
+     * 获取指定的 [Typeface]
+     */
+    @Throws(NoSuchElementException::class)
+    public fun matchFamilyStyle(familyName: String, style: FontStyle): Typeface {
+        return default.matchFamilyStyle(familyName, style)
+            ?: services().firstNotNullOfOrNull { provider -> provider.matchFamilyStyle(familyName, style) }
+            ?: throw NoSuchElementException("$familyName - $style")
+    }
+
+    /**
+     * 获取指定的 [Typeface]
+     */
+    @Throws(NoSuchElementException::class)
+    public fun matchFamiliesStyle(families: Array<String>, style: FontStyle): Typeface {
+        return default.matchFamiliesStyle(families, style)
+            ?: services().firstNotNullOfOrNull { provider -> provider.matchFamiliesStyle(families, style) }
+            ?: throw NoSuchElementException("${families.asList()} - $style")
+    }
 
     /**
      * 宋体
      */
-    public val SimSun: FontStyleSet get() = manager.matchFamily("SimSun")
+    public fun matchSimSun(style: FontStyle): Typeface = matchFamilyStyle("SimSun", style)
 
     /**
      * 新宋体
      */
-    public val NSimSun: FontStyleSet get() = manager.matchFamily("NSimSun")
+    public fun matchNSimSun(style: FontStyle): Typeface = matchFamilyStyle("NSimSun", style)
 
     /**
      * 黑体
      */
-    public val SimHei: FontStyleSet get() = manager.matchFamily("SimHei")
+    public fun matchSimHei(style: FontStyle): Typeface = matchFamilyStyle("SimHei", style)
 
     /**
      * 仿宋
      */
-    public val FangSong: FontStyleSet get() = manager.matchFamily("FangSong")
+    public fun matchFangSong(style: FontStyle): Typeface = matchFamilyStyle("FangSong", style)
 
     /**
      * 楷体
      */
-    public val KaiTi: FontStyleSet get() = manager.matchFamily("KaiTi")
+    public fun matchKaiTi(style: FontStyle): Typeface = matchFamilyStyle("KaiTi", style)
 
     /**
      * 隶书
      */
-    public val LiSu: FontStyleSet get() = manager.matchFamily("LiSu")
+    public fun matchLiSu(style: FontStyle): Typeface = matchFamilyStyle("LiSu", style)
 
     /**
      * 幼圆
      */
-    public val YouYuan: FontStyleSet get() = manager.matchFamily("YouYuan")
+    public fun matchYouYuan(style: FontStyle): Typeface = matchFamilyStyle("YouYuan", style)
 
     /**
      * Arial
      */
-    public val Arial: FontStyleSet get() = manager.matchFamily("Arial")
+    public fun matchArial(style: FontStyle): Typeface = matchFamilyStyle("Arial", style)
 
     /**
      * Helvetica
       */
-    public val Helvetica: FontStyleSet get() = manager.matchFamily("Helvetica")
+    public fun matchHelvetica(style: FontStyle): Typeface = matchFamilyStyle("Helvetica", style)
 }

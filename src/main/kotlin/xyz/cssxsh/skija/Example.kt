@@ -12,8 +12,8 @@ internal const val SHOUT_BACKGROUND = "xyz.cssxsh.skija.shout"
 /**
  * 构造 PornPub Logo
  */
-public fun pornhub(porn: String = "Porn", hub: String = "Hub", manager: FontMgr = FontMgr.getDefault()): Surface {
-    val font = Font(manager.matchFamily("Arial").matchStyle(FontStyle.BOLD)!!, 90F)
+public fun pornhub(porn: String = "Porn", hub: String = "Hub"): Surface {
+    val font = Font(FontStyles.matchArial(FontStyle.BOLD), 90F)
     val prefix = TextLine.make(porn, font)
     val suffix = TextLine.make(hub, font)
     val black = Paint().setColor(0xFF000000.toInt())
@@ -85,7 +85,7 @@ public fun petpet(face: Image, second: Double = 0.02): Data {
  * Shout Face
  * @see SHOUT_BACKGROUND
  */
-public fun shout(vararg lines: String, manager: FontMgr = FontMgr.getDefault()): Surface {
+public fun shout(vararg lines: String): Surface {
     val background = try {
         Image.makeFromEncoded(File(System.getProperty(SHOUT_BACKGROUND, "shit.png")).readBytes())
     } catch (cause: Throwable) {
@@ -102,7 +102,7 @@ public fun shout(vararg lines: String, manager: FontMgr = FontMgr.getDefault()):
     when (lines.size) {
         1 -> {
             val size = 50F
-            val font = Font(manager.matchFamily("SimHei").matchStyle(FontStyle.BOLD)!!, size)
+            val font = Font(FontStyles.matchSimHei(FontStyle.BOLD), size)
             val (line) = lines
             for ((index, word) in line.withIndex()) {
                 surface.canvas.drawString(word.toString(), 430F, 80F + index * size, font, black)
@@ -110,7 +110,7 @@ public fun shout(vararg lines: String, manager: FontMgr = FontMgr.getDefault()):
         }
         2 -> {
             val size = 50F
-            val font = Font(FontStyles.SimHei.matchStyle(FontStyle.BOLD)!!, size)
+            val font = Font(FontStyles.matchSimHei(FontStyle.BOLD), size)
             val (first, second) = lines
             for ((index, word) in first.withIndex()) {
                 surface.canvas.drawString(word.toString(), 380F, 80F + index * size, font, black)
@@ -127,9 +127,9 @@ public fun shout(vararg lines: String, manager: FontMgr = FontMgr.getDefault()):
 /**
  * [5000choyen](https://github.com/yurafuca/5000choyen)
  */
-public fun choyen(top: String, bottom: String, manager: FontMgr = FontMgr.getDefault()): Surface {
-    val sans = Font(manager.matchFamily("Noto Sans SC").matchStyle(FontStyle.BOLD)!!, 100F)
-    val serif = Font(manager.matchFamily("Noto Serif SC").matchStyle(FontStyle.BOLD)!!, 100F)
+public fun choyen(top: String, bottom: String): Surface {
+    val sans = Font(FontStyles.matchFamilyStyle("Noto Sans SC", FontStyle.BOLD), 100F)
+    val serif = Font(FontStyles.matchFamilyStyle("Noto Serif SC", FontStyle.BOLD), 100F)
     val red = TextLine.make(top, sans)
     val silver = TextLine.make(bottom, serif)
     val width = maxOf(red.textBlob!!.bounds.right, silver.textBlob!!.bounds.right).toInt()
