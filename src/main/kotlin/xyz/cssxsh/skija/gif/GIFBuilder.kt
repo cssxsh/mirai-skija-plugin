@@ -94,7 +94,7 @@ public class GIFBuilder(public val width: Int, public val height: Int) {
                 this.options.table.exists() -> this.options.table
                 else -> ColorTable(OctTreeQuantizer.quantize(bitmap, 256))
             }
-            val index = if (options.transparency) table.background else -1
+            val index = if (options.transparency) table.background else null
 
             GraphicControlExtension.write(buffer, options.method, options.input, index, options.delay)
 

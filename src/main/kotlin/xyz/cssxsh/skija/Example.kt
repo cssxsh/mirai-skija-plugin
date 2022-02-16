@@ -5,9 +5,6 @@ import io.github.humbleui.types.*
 import xyz.cssxsh.skija.gif.*
 import java.io.*
 
-internal const val PET_PET_SPRITE = "xyz.cssxsh.skija.petpet"
-
-internal const val SHOUT_BACKGROUND = "xyz.cssxsh.skija.shout"
 
 /**
  * 构造 PornPub Logo
@@ -28,6 +25,8 @@ public fun pornhub(porn: String = "Porn", hub: String = "Hub"): Surface {
 
     return surface
 }
+
+internal const val PET_PET_SPRITE = "xyz.cssxsh.skija.petpet"
 
 /**
  * 构造 PetPet Face
@@ -81,6 +80,64 @@ public fun petpet(face: Image, second: Double = 0.02): Data {
     }
 }
 
+internal const val LICK_BASE_GIF = "xyz.cssxsh.skija.lick"
+
+/**
+ * 构造 Lick Face
+ * @see LICK_BASE_GIF
+ */
+public fun lick(face: Image): Data {
+    val lick: Codec = try {
+        Codec.makeFromData(Data.makeFromFileName(System.getProperty(LICK_BASE_GIF, "lick.gif")))
+    } catch (cause: Throwable) {
+        throw IllegalStateException(
+            "please download https://mirai.mamoe.net/assets/uploads/files/1645014451174-lick.gif , file path set property $LICK_BASE_GIF",
+            cause
+        )
+    }
+    val surface = Surface.makeRaster(lick.imageInfo)
+
+    val offsets = listOf(
+        0 to 0,
+        1 to 1,
+        2 to 3,
+        3 to 1,
+        1 to 0,
+        2 to 2,
+        3 to 1,
+        0 to 1,
+    )
+
+    return gif(width = lick.width, height = lick.height) {
+        lick.framesInfo.forEachIndexed { index, frame ->
+            val bitmap = Bitmap()
+            bitmap.allocPixels(lick.imageInfo)
+            lick.readPixels(bitmap, index)
+            surface.canvas.clear(Color.makeARGB(0,0,0,0))
+            surface.writePixels(bitmap, 0, 0)
+
+            val (l, t) = offsets[index % 8]
+            surface.canvas.drawImageRect(face, Rect.makeXYWH(110F + l, 240F + t, 150F, 150F))
+
+            surface.readPixels(bitmap, 0,0)
+
+            frame(bitmap = bitmap) {
+                delay = frame.duration / 1000.0
+                rect = frame.frameRect
+                method = when (frame.disposalMethod) {
+                    AnimationDisposalMode._UNUSED, null -> DisposalMethod.UNSPECIFIED
+                    AnimationDisposalMode.KEEP -> DisposalMethod.DO_NOT_DISPOSE
+                    AnimationDisposalMode.RESTORE_BG_COLOR -> DisposalMethod.RESTORE_TO_BACKGROUND
+                    AnimationDisposalMode.RESTORE_PREVIOUS -> DisposalMethod.RESTORE_TO_PREVIOUS
+                }
+            }
+        }
+    }
+
+}
+
+internal const val SHOUT_BACKGROUND = "xyz.cssxsh.skija.shout"
+
 /**
  * Shout Face
  * @see SHOUT_BACKGROUND
@@ -95,7 +152,7 @@ public fun shout(vararg lines: String): Surface {
         )
     }
     val surface = Surface.makeRasterN32Premul(535, 500)
-    val black = Paint().setColor(Color.makeRGB(0,0,0))
+    val black = Paint().setColor(Color.makeRGB(0, 0, 0))
 
     surface.canvas.drawImage(background, 0F, 0F)
 
@@ -132,7 +189,7 @@ public fun choyen(top: String, bottom: String): Surface {
     val serif = Font(FontStyles.matchFamilyStyle("Noto Serif SC", FontStyle.BOLD), 100F)
     val red = TextLine.make(top, sans)
     val silver = TextLine.make(bottom, serif)
-    val width = maxOf(red.textBlob!!.bounds.right, silver.textBlob!!.bounds.right).toInt()
+    val width = maxOf(red.textBlob!!.blockBounds.right + 70, silver.textBlob!!.blockBounds.right + 250).toInt()
     val surface = Surface.makeRasterN32Premul(width, 290)
     // setTransform(m11, m12, m21, m22, dx, dy)
     surface.canvas.skew(-0.45F, 0F)

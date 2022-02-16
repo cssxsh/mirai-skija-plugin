@@ -5,7 +5,7 @@ import java.nio.*
 public class ColorTable(
     public val colors: IntArray,
     public val sort: Boolean = false,
-    public val background: Int = colors.size - 1,
+    public val background: Int = (colors.size - 1).coerceAtLeast(0),
 ) {
     public companion object {
         private val SizeList = listOf(0, 2, 4, 8, 16, 32, 64, 128, 256)

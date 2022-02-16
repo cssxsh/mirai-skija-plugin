@@ -35,6 +35,11 @@ public object MiraiSkijaPlugin : KotlinPlugin(
             dataFolder
         )
         System.setProperty(SHOUT_BACKGROUND, background.absolutePath)
+        val lick = download(
+            urlString = "https://mirai.mamoe.net/assets/uploads/files/1645014451174-lick.gif",
+            dataFolder
+        )
+        System.setProperty(LICK_BASE_GIF, lick.absolutePath)
     }
 
     override fun onEnable() {
@@ -43,7 +48,7 @@ public object MiraiSkijaPlugin : KotlinPlugin(
             loadFace()
             MiraiTypefaceFontProvider.loadTypeface(
                 folder = fonts,
-                "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/Sarasa%20Gothic%20version%200.35.8/sarasa-gothic-ttc-0.35.8.7z",
+                "https://mirrors.tuna.tsinghua.edu.cn/github-release/be5invis/Sarasa-Gothic/LatestRelease/sarasa-gothic-ttc-0.35.9.7z",
                 "http://dl.font.im/Noto_Sans.zip",
                 "http://dl.font.im/Noto_Serif.zip"
             )
@@ -81,6 +86,15 @@ public object MiraiSkijaPlugin : KotlinPlugin(
                 val (top, bottom) = result.destructured
 
                 subject.uploadImage(resource = choyen(top, bottom).makeSnapshotResource())
+            }
+            """^#lick""".toRegex() findingReply { result ->
+                logger.info { "lick ${result.value}" }
+                val user = message.findIsInstance<At>()?.target?.let { (subject as? Group)?.get(it) } ?: sender
+                val file = dataFolder.resolve("${user.id}.jpg")
+                if (file.exists().not()) download(urlString = user.avatarUrl, folder = dataFolder).renameTo(file)
+                val face = SkijaImage.makeFromEncoded(file.readBytes())
+
+                subject.uploadImage(resource = SkijaExternalResource(origin = lick(face), formatName = "gif"))
             }
         }
     }

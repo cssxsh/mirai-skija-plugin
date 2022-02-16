@@ -4,7 +4,7 @@ import io.github.humbleui.skija.*
 import io.github.humbleui.skija.paragraph.*
 import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.*
-import xyz.cssxsh.skija.FontStyles
+import xyz.cssxsh.skija.*
 import java.io.*
 import java.util.zip.*
 
@@ -29,7 +29,7 @@ public object MiraiTypefaceFontProvider : TypefaceFontProvider() {
             try {
                 downloaded.add(download(urlString = link, folder = download))
             } catch (cause: Throwable) {
-                MiraiSkijaPlugin.logger.warning({ "字体下载失败, $link" }, cause)
+                logger.warning({ "字体下载失败, $link" }, cause)
             }
         }
 
@@ -71,7 +71,7 @@ public object MiraiTypefaceFontProvider : TypefaceFontProvider() {
      * @param folder 字体文件文件夹
      */
     public fun loadTypeface(folder: File) {
-        for (file in folder.listFiles().orEmpty()) {
+        for (file in folder.listFiles() ?: return) {
             when (file.extension) {
                 "ttf" -> registerTypeface(Typeface.makeFromFile(file.path))
                 "ttc" -> registerTypeface(Typeface.makeFromFile(file.path))

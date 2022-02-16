@@ -21,7 +21,7 @@ public object FontStyles {
     }
 
     /**
-     * 系统默认字体列表
+     * 字体列表
      */
     public fun families(): Set<String> {
         val names: MutableSet<String> = HashSet()

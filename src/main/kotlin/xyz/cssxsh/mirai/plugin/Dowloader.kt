@@ -13,7 +13,7 @@ import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.*
 import java.io.File
 
-private val logger get() = MiraiSkijaPlugin.logger
+internal val logger get() = MiraiSkijaPlugin.logger
 
 private val http = HttpClient(OkHttp) {
     CurlUserAgent()
@@ -39,9 +39,7 @@ internal suspend fun download(urlString: String, folder: File): File = superviso
             file.outputStream().use { output ->
                 val channel: ByteReadChannel = response.receive()
 
-                while (!channel.isClosedForRead) {
-                    channel.copyTo(output)
-                }
+                while (!channel.isClosedForRead) channel.copyTo(output)
             }
         }
 
