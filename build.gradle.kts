@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.mirai"
-version = "1.0.0-RC4"
+version = "1.0.0"
 
 repositories {
     mavenLocal()
@@ -24,10 +24,10 @@ mavenCentralPublish {
 }
 
 dependencies {
-    api("io.github.humbleui:skija-macos-x64:0.98.1")
-    api("io.github.humbleui:skija-macos-arm64:0.98.1")
-    api("io.github.humbleui:skija-linux:0.98.1")
-    api("io.github.humbleui:skija-windows:0.98.1")
+    api("io.github.humbleui:skija-macos-x64:0.100.0")
+    api("io.github.humbleui:skija-macos-arm64:0.100.0")
+    api("io.github.humbleui:skija-linux:0.100.0")
+    api("io.github.humbleui:skija-windows:0.100.0")
     compileOnly("org.projectlombok:lombok:1.18.22")
     compileOnly("net.mamoe:mirai-core-utils:2.10.0")
     //
@@ -36,6 +36,18 @@ dependencies {
 
 kotlin {
     explicitApi()
+    target.compilations {
+        all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 mirai {
